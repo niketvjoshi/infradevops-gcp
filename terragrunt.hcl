@@ -6,7 +6,7 @@ remote_state {
     if_exists = "overwrite_terragrunt"
   }
   config = {
-    project  = "infradevops-seed-mumbai"
+    project  = "id-seed-project"
     location = "asia-south1"
     bucket   = "infradevops-tf-state-mumbai"
     prefix   = "${path_relative_to_include()}/terraform.tfstate"
