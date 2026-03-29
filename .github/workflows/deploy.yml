@@ -7,11 +7,9 @@ on:
     branches: [ "main" ]
 
 jobs:
-  terragrunt:
+  deploy:
     name: 'Deploy to Mumbai'
     runs-on: ubuntu-latest
-    
-    # Required for OIDC / Workload Identity
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -24,7 +22,6 @@ jobs:
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v2'
         with:
-          # This pulls from the Secrets you added to GitHub
           workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
 
@@ -32,13 +29,18 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.7.0
+          terraform_wrapper: false # Recommended for Terragrunt
 
-      - name: Setup Terragrunt
-        uses: gruntwork-io/setup-terragrunt@v2
-        with:
-          terragrunt_version: 0.55.0
+      - name: Install Terragrunt
+        run: |
+          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/v0.55.0/terragrunt_linux_amd64"
+          sudo chmod +x /usr/local/bin/terragrunt
+          terragrunt --version
 
       - name: Terragrunt Init & Apply
-        # --terragrunt-non-interactive is vital for CI/CD
         run: |
-          terragrunt run-all apply --terragrunt-non-interactive
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            terragrunt run-all plan --terragrunt-non-interactive
+          else
+            terragrunt run-all apply --terragrunt-non-interactive
+          fi
