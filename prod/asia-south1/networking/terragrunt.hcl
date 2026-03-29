@@ -2,9 +2,9 @@ include "root" {
   path = find_in_parent_folders()
 }
 
-# This creates the "Zero Intervention" link
+# FIXED: Changed 'path' to 'config_path'
 dependency "project" {
-  path = "../project"
+  config_path = "../project"
 }
 
 terraform {
@@ -12,7 +12,7 @@ terraform {
 }
 
 inputs = {
-  # Use the ID directly from the dependency above
+  # This stays the same
   project_id   = dependency.project.outputs.project_id
   network_name = "infradevops-vpc-prod"
   routing_mode = "REGIONAL"
