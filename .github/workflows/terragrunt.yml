@@ -18,7 +18,7 @@ jobs:
 
       - uses: gruntwork-io/setup-terragrunt@v2
         with:
-          terragrunt_version: latest
+          terragrunt_version: 0.55.0
 
       - name: Terragrunt Apply
         run: terragrunt run-all apply --terragrunt-non-interactive
