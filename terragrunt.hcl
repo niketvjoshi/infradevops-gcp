@@ -1,4 +1,4 @@
-# root terragrunt.hcl1
+# root terragrunt.hcl
 remote_state {
   backend = "gcs"
   generate = {
