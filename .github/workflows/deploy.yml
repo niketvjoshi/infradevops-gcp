@@ -45,7 +45,8 @@ jobs:
       - name: Terragrunt Init & Apply
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            terragrunt run-all plan --terragrunt-non-interactive
+            #terragrunt run-all plan --terragrunt-non-interactive
+            terragrunt run-all destroy --terragrunt-non-interactive
           else
             terragrunt run-all apply --terragrunt-non-interactive
           fi
