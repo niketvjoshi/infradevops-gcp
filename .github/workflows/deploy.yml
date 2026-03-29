@@ -1,0 +1,44 @@
+name: 'GCP Terragrunt Production'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  terragrunt:
+    name: 'Deploy to Mumbai'
+    runs-on: ubuntu-latest
+    
+    # Required for OIDC / Workload Identity
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          # This pulls from the Secrets you added to GitHub
+          workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.0
+
+      - name: Setup Terragrunt
+        uses: gruntwork-io/setup-terragrunt@v2
+        with:
+          terragrunt_version: 0.55.0
+
+      - name: Terragrunt Init & Apply
+        # --terragrunt-non-interactive is vital for CI/CD
+        run: |
+          terragrunt run-all apply --terragrunt-non-interactive
