@@ -19,7 +19,6 @@ generate "provider" {
   contents  = <<EOF
 provider "google" {
   region = "asia-south1"
-  impersonate_service_account = "terraform-admin@id-seed-project.iam.gserviceaccount.com"
 }
 EOF
 }
